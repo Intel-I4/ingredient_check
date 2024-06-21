@@ -27,11 +27,13 @@ def rewrite_table(df):
     # Insert all rows from the DataFrame into the table
     for _, row in df.iterrows():
         cur.execute("INSERT INTO ingredients (name, num) VALUES (?, ?)", (row['name'], row['num']))
+        
+    df = read_ingredient_query(cur)
 
     con.commit()
     con.close()
 
-    return read_ingredients_table()
+    return df
 
 
 # 테이블에 한 줄을 삽입해 주는 함수
@@ -48,10 +50,11 @@ def insert_oneline(lst):
     else:
         cur.execute("INSERT INTO ingredients (name, num) VALUES (?, ?)", (lst[0], lst[1]))
 
+    df = read_ingredient_query(cur)
+
     con.commit()
     con.close()
-
-    return read_ingredients_table()
+    return df
 
 
 # 테이블 전체를 읽어와서 df로 돌려주는 함수
@@ -59,14 +62,28 @@ def read_ingredients_table():
     con = sqlite3.connect(db_file)
     cur = con.cursor()
 
-    query = 'SELECT name, num as total_num FROM ingredients'
-    # query = 'SELECT name, SUM(num) as total_num FROM ingredients GROUP BY name'
+    # query = 'SELECT name, num as total_num FROM ingredients'
+    query = 'SELECT name, SUM(num) as total_num FROM ingredients GROUP BY name'
     cur.execute(query)
 
     rows = cur.fetchall()  # Fetch all rows from the executed query
 
     # Create a DataFrame directly from the fetched rows
-    df = pd.DataFrame(rows, columns=['name', 'total_num'])
+    df = pd.DataFrame(rows, columns=['name', 'num'])
 
     con.close()
+    return df
+
+
+# 테이블 전체의 내용을 읽어오는 함수 중 쿼리문의 내용만을 담은 함수 
+def read_ingredient_query(cur):
+    # query = 'SELECT name, num as total_num FROM ingredients'
+    query = 'SELECT name, SUM(num) as num FROM ingredients GROUP BY name'
+    cur.execute(query)
+
+    rows = cur.fetchall()  # Fetch all rows from the executed query
+
+    # Create a DataFrame directly from the fetched rows
+    df = pd.DataFrame(rows, columns=['name', 'num'])
+
     return df
