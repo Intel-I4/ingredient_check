@@ -43,7 +43,7 @@ def insert_ingred(lst):
 
 
 # 재료 테이블 전체를 읽어와서 df로 돌려주는 함수
-def read_insert_ingred_table():
+def read_ingred_table():
     con = sqlite3.connect(db_file)
     cur = con.cursor()
 
@@ -59,7 +59,7 @@ def read_insert_ingred_table():
     return df
 
 
-# 재료 테이블 전체의 내용을 읽어오는 함수 중 쿼리문의 내용만을 담은 함수 
+# 재료 테이블 전체의 내용을 읽어오는 함수 중 쿼리문의 내용만을 담은 함수
 def read_ingred_query(cur):
     query = 'SELECT * FROM ingredients'
     cur.execute(query)
@@ -92,13 +92,12 @@ def read_ingred_table():
 # 재료 이름을 입력받아 id를 돌려주는 함수
 def ingredName_2_ingredID(name):
     df = read_ingred_table()
-    ingred_id = df.loc[df["name"] == name, "id"].values[0]
-    ingred_id = int(ingred_id)
+    ingred_id = df.loc[df["name"] == name, "id"]
     return ingred_id
 
 
 # 재료 id를 입력받아 이름을 돌려주는 함수
 def ingredID_2_ingredName(id):
     df = read_ingred_table()
-    ingred_name = df.loc[df["id"] == id, "name"].values[0]
+    ingred_name = df.loc[df["id"] == id, "name"]
     return ingred_name
