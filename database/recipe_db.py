@@ -90,4 +90,7 @@ def recipeName_2_recipeID(name):
 def read_steps_recipe(name):
     df = read_recipes_table()
 
-    return df.loc[df["name"] == name, "steps"][0]
+    if name in df["name"].values:
+        return df.loc[df["name"] == name, "steps"].iloc[0]
+    else:
+        return f"Recipe named '{name}' not found."
