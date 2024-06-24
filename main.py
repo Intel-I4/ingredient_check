@@ -11,18 +11,22 @@ from cam.webcam import Webcam
 page = 1
 webcam = None
 themeColor = "#f6ddd9"
-
+recipe = 0
 
 ########## 함수 정의부 ##########
 
-def next_frame():
-    global page, webcam
+def next_frame(btn = 0):
+    global page, webcam, recipe
     page += 1
-    if page >= 3:
-        page = 3
-        frame3.lift()
+    if page >= 4:
+        page = 4
+        fridge_ui.reclip_list(frame4, tk, recipe)   # recpie 값에 따라 해당 레시피 출력
+        frame4.lift()
+    elif page == 3:
+        recipe = btn               # 레시피 버튼 값 recipe 변수에 저장
         if webcam is not None:
             webcam.start_webcam()  # frame3이 보일 때 웹캠 시작
+        frame3.lift()
     elif page == 2:
         if webcam is not None:
             webcam.stop_webcam()  # frame2에서는 웹캠 정지
@@ -32,7 +36,7 @@ def next_frame():
 
 
 def prev_frame():
-    global page, Webcam
+    global page, webcam
     page -= 1
     if page <= 1:
         page = 1
@@ -43,6 +47,8 @@ def prev_frame():
         if webcam is not None:
             webcam.start_webcam()  # frame3이 보일 때 웹캠 시작
         frame3.lift()
+    elif page == 4:
+        frame4.lift()
 
 
 def load_image():
@@ -68,6 +74,19 @@ win_width = 640
 win_height = 960
 root_size_text = str(win_width) + "x" + str(win_height)
 root.geometry(root_size_text)
+
+
+
+##### frame4 #####
+
+frame4 = tk.Frame(root, bg=themeColor, border=2)
+frame4.place(x=0, y=0, width=win_width, height=win_height)
+
+# 버튼 frame4
+but_frame4 = tk.Frame(frame4, border=10, bg=themeColor)
+but_frame4.place(x=450, y=850, width=150, height=60)
+tk.Button(but_frame4, text='다음', command=next_frame).pack(side=tk.RIGHT, padx=10)
+tk.Button(but_frame4, text='이전', command=prev_frame).pack(side=tk.RIGHT)
 
 
 
