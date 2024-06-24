@@ -17,7 +17,7 @@ def food_info(name):
     response = requests.get(url)
     if response.status_code == 200:
         html = response.text
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, ' html.parser')
     else:
         print("HTTP response error :", response.status_code)
         return
