@@ -3,7 +3,7 @@ from database import ingredient_db, recipe_ingredient_db, recipe_db
 
 
 ######## 레시피 다이렉션을 위한 변수들 ########
-recipe_lst = ["김치찌개", "오므라이스", "제육"]
+recipe_lst = ["김치찌개", "오므라이스", "제육볶음"]
 sugestion_lst = [0, 1, 2]
 recipe_direct = 0
 themeColor = "#f6ddd9"
@@ -120,6 +120,50 @@ def recipe_sort():
     print("jeyuk_cnt", jeyuk_cnt)
 
 
+
+def reclip_list(win, tk, num):
+    if not any(isinstance(child, tk.Label) for child in win.winfo_children()):
+        #### label #####
+        reclip_label = tk.Label(
+            win,
+            text="레시피 설명",
+            bg=themeColor,
+            font=("Helvetica", 14)
+        )
+        
+        # packing
+        reclip_label.pack(fill=tk.BOTH, ipady=900*0.05)
+    else:
+        # 기존 label이 존재하면 해당 label 유지
+        reclip_label = [child for child in win.winfo_children() if isinstance(child, tk.Label)][0]
+
+    # 기존 text가 존재하면 삭제
+    for widget in win.winfo_children():
+        if isinstance(widget, tk.Text):
+            widget.destroy()
+    
+    print(recipe_lst[sugestion_lst[num]])
+    #### table ####
+    recipe_db.db_file = "./database/recipes.db"
+    recipe_df = recipe_db.read_steps_recipe(recipe_lst[sugestion_lst[num]])
+    
+    #### Text ####
+    recipe_text = tk.Text(
+        win,
+        bg=themeColor,
+        font=("italic", 14),
+        wrap=tk.WORD  # 단어 단위로 줄바꿈
+    )
+
+    # 텍스트 위젯에 내용 추가
+    recipe_text.insert(tk.END, recipe_df)
+    recipe_text.config(state=tk.DISABLED)
+
+    ### packing ###
+    recipe_text.pack(fill=tk.X, pady=60, padx=40)
+
+
+
 '''
 추천 레시피 순서로 버튼 순서 변경
 '''
@@ -136,17 +180,17 @@ def recipe_button(win, tk, btn_callback):
     button1 = tk.Button(
         win,
         text=recipe_lst[sugestion_lst[0]],
-        command=btn_callback
+        command=lambda: btn_callback(0)
     )
     button2 = tk.Button(
         win,
         text=recipe_lst[sugestion_lst[1]],
-        command=btn_callback
+        command=lambda: btn_callback(1)
     )
     button3 = tk.Button(
         win,
         text=recipe_lst[sugestion_lst[2]],
-        command=btn_callback
+        command=lambda: btn_callback(2)
     )
     
     ##### label #####
