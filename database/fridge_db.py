@@ -27,7 +27,7 @@ def rewrite_table(df):
     # Insert all rows from the DataFrame into the table
     for _, row in df.iterrows():
         cur.execute("INSERT INTO ingredients (name, num) VALUES (?, ?)", (row['name'], row['num']))
-        
+
     df = read_ingredient_query(cur)
 
     con.commit()
@@ -40,7 +40,6 @@ def rewrite_table(df):
 def insert_oneline(lst):
     con = sqlite3.connect(db_file)
     cur = con.cursor()
-    
 
     cur.execute("SELECT * FROM ingredients WHERE name = ?", (lst[0],))
     existing_row = cur.fetchone()
