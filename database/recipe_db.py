@@ -13,7 +13,7 @@ def create_recipes_table():
     cur.execute('''
     CREATE TABLE IF NOT EXISTS recipes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL, 
+        name TEXT NOT NULL,
         steps TEXT NOT NULL
     )
     ''')
@@ -63,7 +63,7 @@ def read_recipes_table():
     return df
 
 
-# 테이블 전체의 내용을 읽어오는 함수 중 쿼리문의 내용만을 담은 함수 
+# 테이블 전체의 내용을 읽어오는 함수 중 쿼리문의 내용만을 담은 함수
 def read_recipe_query(cur):
     query = 'SELECT * FROM recipes'
     cur.execute(query)
@@ -79,10 +79,11 @@ def read_recipe_query(cur):
 # 레시피 이름을 입력받아 id를 돌려주는 함수
 def recipeName_2_recipeID(name):
     df = read_recipes_table()
-    recipe_id = df.loc[df["name"] == name, "id"].values[0]
-    recipe_id = int(recipe_id)
-
-    return recipe_id
+    recipe_id_series = df.loc[df["name"] == name, "id"]
+    if not recipe_id_series.empty:
+        return recipe_id_series.iloc[0]
+    else:
+        return None
 
 
 # 입력 받은 레시피의 만드는 'steps'만 돌려주는 함수

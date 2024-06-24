@@ -2,7 +2,7 @@ import pandas as pd
 import tkinter as tk
 from tkinter import ttk
 
-from recipe import recipe
+from database.recipe import recipe
 from database import fridge_db
 from ui import fridge_ui
 
@@ -26,9 +26,9 @@ win.geometry(win_size_text)
 fridge_ui.fridge_list(win, tk, ttk)
 
 '''
-TODO: 추천 레시피 순서를 sugestion_lst에 삽입
+추천 레시피 순서를 sugestion_lst에 삽입
 '''
-
+fridge_ui.recipe_sort()
 '''
 추천 레시피 순서로 버튼 순서 변경
 '''

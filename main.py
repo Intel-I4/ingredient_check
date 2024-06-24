@@ -98,8 +98,8 @@ frame2 = tk.Frame(root, bg=themeColor, border=2)
 frame2.place(x=0, y=0, width=win_width, height=win_height)
 # 냉장고 속의 재료 출력
 fridge_ui.fridge_list(frame2, tk, ttk)
-# TODO: 추천 레시피 순서를 sugestion_lst에 삽입
-
+# 추천 레시피 순서를 sugestion_lst에 삽입
+fridge_ui.recipe_sort()
 # 추천 레시피 순서로 버튼 순서 변경
 fridge_ui.recipe_button(frame2, tk, next_frame)
 
