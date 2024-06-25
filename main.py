@@ -1,7 +1,9 @@
+import threading
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 
+from sock import server
 from ui import fridge_ui
 from cam.webcam import Webcam
 
@@ -12,6 +14,8 @@ page = 1
 webcam = None
 themeColor = "#f6ddd9"
 recipe = 0
+server_ip = "10.10.15.103"
+server_port = 12309
 
 ########## 함수 정의부 ##########
 
@@ -63,7 +67,19 @@ def load_image():
         return None
 
 
+
 ##########  main ##########
+
+# 냉장고 정보를 라즈베리 파이로부터 받아오기 위한 소켓 서버 생성 (w.thread)
+try:
+    freg_thrd = threading.Thread(target=server.receive_file,
+                                 args=(server_ip, server_port))
+    freg_thrd.start()
+    print("Thread started successfully.")
+except Exception as e:
+    print(f"Error starting thread: {e}")
+
+
 
 # tkinter 윈도우 생성
 root = tk.Tk()
