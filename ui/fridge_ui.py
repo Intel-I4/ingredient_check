@@ -8,6 +8,7 @@ sugestion_lst = [0, 1, 2]
 recipe_direct = 0
 themeColor = "#f6ddd9"
 
+
 '''
 냉장고 속의 재료 출력
 '''
@@ -57,7 +58,7 @@ def fridge_list(win, tk, ttk):
 
 
 '''
-TODO: 추천 레시피 순서를 sugestion_lst에 삽입
+추천 레시피 순서를 sugestion_lst에 삽입
 '''
 def recipe_sort():
     global sugestion_lst
