@@ -1,6 +1,10 @@
 import socket
 
+renew_db = False
+
 def receive_file(server_ip, server_port):
+    global renew_db
+    
     # 서버 소켓 생성
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((server_ip, server_port))
@@ -23,7 +27,8 @@ def receive_file(server_ip, server_port):
 
         print("File received successfully.")
 
-        # TODO: 리스트 실시간 갱신
+        # 리스트 실시간 갱신
+        renew_db = True
 
         conn.close()
 

@@ -99,7 +99,7 @@ def recipe_sort():
 
     # recipe_lst = ["김치찌개", "오므라이스", "제육"]
     # sugestion_lst = [0, 1, 2]
-    
+
     if jeyuk_cnt >= kimchi_cnt and jeyuk_cnt >= omlet_cnt:
         if kimchi_cnt >= omlet_cnt:
             sugestion_lst = [2, 0, 1]
@@ -115,7 +115,7 @@ def recipe_sort():
             sugestion_lst = [0, 2, 1]
         else:
             sugestion_lst = [0, 1, 2]
-            
+
     print("omlet_cnt", omlet_cnt)
     print("kimchi_cnt", kimchi_cnt)
     print("jeyuk_cnt", jeyuk_cnt)
@@ -131,7 +131,7 @@ def reclip_list(win, tk, num):
             bg=themeColor,
             font=("Helvetica", 14)
         )
-        
+
         # packing
         reclip_label.pack(fill=tk.BOTH, ipady=900*0.05)
     else:
@@ -142,7 +142,7 @@ def reclip_list(win, tk, num):
     for widget in win.winfo_children():
         if isinstance(widget, tk.Text):
             widget.destroy()
-    
+
     print(recipe_lst[sugestion_lst[num]])
     #### table ####
     recipe_db.db_file = "./database/recipes.db"
@@ -178,29 +178,29 @@ def recipe_button(win, tk, btn_callback):
     )
 
     ##### button #####
-    button1 = tk.Button(
+    sug_btn1 = tk.Button(
         win,
         text=recipe_lst[sugestion_lst[0]],
         command=lambda: btn_callback(0)
     )
-    button2 = tk.Button(
+    sug_btn2 = tk.Button(
         win,
         text=recipe_lst[sugestion_lst[1]],
         command=lambda: btn_callback(1)
     )
-    button3 = tk.Button(
+    sug_btn3 = tk.Button(
         win,
         text=recipe_lst[sugestion_lst[2]],
         command=lambda: btn_callback(2)
     )
-    
+
     ##### label #####
     empty_label = tk.Label(
         win
     )
 
     suggest_label.pack(fill=tk.BOTH, ipady=900*0.05)
-    button1.pack(side=tk.LEFT, expand=True, ipady=900*0.01)
-    button2.pack(side=tk.LEFT, expand=True, ipady=900*0.01)
-    button3.pack(side=tk.LEFT, expand=True, ipady=900*0.01)
+    sug_btn1.pack(side=tk.LEFT, expand=True, ipady=900*0.01)
+    sug_btn2.pack(side=tk.LEFT, expand=True, ipady=900*0.01)
+    sug_btn3.pack(side=tk.LEFT, expand=True, ipady=900*0.01)
     empty_label.pack(fill=tk.BOTH, ipady=900*0.05)

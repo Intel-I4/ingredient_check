@@ -16,7 +16,5 @@ def send_file(server_ip, server_port, file_path):
     print("File sent successfully.")
     client_socket.close()
 
-
-# 라즈베리 파이에서 사용하는 코드
 # if __name__ == "__main__":
 #     send_file("10.10.15.103", 12309, "./ingredients.db")

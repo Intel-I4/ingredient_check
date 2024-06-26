@@ -1,11 +1,12 @@
 import sqlite3
+import os
 import pandas as pd
 import logging as log
 
 db_file = "ingredients.db"
 
 
-# 테이블이 없다면 생성 해주는 함수 
+# 테이블이 없다면 생성 해주는 함수
 def create_ingredients_table():
     con = sqlite3.connect(db_file)
     cur = con.cursor()
@@ -78,7 +79,7 @@ def read_ingredients_table():
     return df
 
 
-# 테이블 전체의 내용을 읽어오는 함수 중 쿼리문의 내용만을 담은 함수 
+# 테이블 전체의 내용을 읽어오는 함수 중 쿼리문의 내용만을 담은 함수
 def read_ingredient_query(cur):
     query = 'DELETE FROM ingredients WHERE num = 0'
     cur.execute(query)
