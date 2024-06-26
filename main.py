@@ -1,3 +1,4 @@
+import os
 import threading
 import tkinter as tk
 from tkinter import ttk
@@ -8,7 +9,9 @@ from ui import fridge_ui
 from cam.webcam import Webcam
 
 
+
 ########## 전역 변수부 ##########
+
 
 page = 1
 webcam = None
@@ -16,13 +19,33 @@ themeColor = "#f6ddd9"
 recipe = 0
 server_ip = "10.10.15.103"
 server_port = 12309
+frame2 = None
+
+
 
 ########## 함수 정의부 ##########
 
+def renew_frame2():
+    global frame2
+
+    frame2 = tk.Frame(root, bg=themeColor, border=2)
+    frame2.place(x=0, y=0, width=win_width, height=win_height)
+    fridge_ui.fridge_list(frame2, tk, ttk)              # 냉장고 속의 재료 출력
+    fridge_ui.recipe_sort()                             # 추천 레시피 순서를 sugestion_lst에 삽입
+    fridge_ui.recipe_button(frame2, tk, next_frame)     # 추천 레시피 순서로 버튼 순서 변경
+    print("fridge renew")
+    server.renew_db = False
+
+
 def next_frame(btn = 0):
-    global page, webcam, recipe
+    global page, webcam, recipe, frame2
+
     page += 1
-    if page >= 4:
+    if page > 4:
+        os._exit(os.EX_OK)
+    elif page == 4:
+        if webcam is not None:
+            webcam.stop_webcam()   # frame4에서는 웹캠 정지
         page = 4
         fridge_ui.reclip_list(frame4, tk, recipe)   # recpie 값에 따라 해당 레시피 출력
         frame4.lift()
@@ -33,19 +56,26 @@ def next_frame(btn = 0):
         frame3.lift()
     elif page == 2:
         if webcam is not None:
-            webcam.stop_webcam()  # frame2에서는 웹캠 정지
+            webcam.stop_webcam()   # frame2에서는 웹캠 정지
+        if server.renew_db:
+            renew_frame2()         # 화면 갱신시 db 변경이 있다면, 화면 재 생성
         frame2.lift()
     elif page == 1:
         frame1.lift()
 
 
 def prev_frame():
-    global page, webcam
+    global page, webcam, frame2
+
     page -= 1
     if page <= 1:
         page = 1
         frame1.lift()
     elif page == 2:
+        if webcam is not None:
+            webcam.stop_webcam()   # frame2에서는 웹캠 정지
+        if server.renew_db:
+            renew_frame2()         # 화면 갱신시 db 변경이 있다면, 화면 재 생성
         frame2.lift()
     elif page == 3:
         if webcam is not None:
@@ -148,7 +178,7 @@ but_frame2.place(x=450, y=850, width=150, height=60)
 
 frame1 = tk.Frame(root, bg=themeColor, border=2)
 frame1.place(x=0, y=0, width=win_width, height=win_height)
-tk.Label(frame1, text="요린이를 위한\n레시피 추천", bg=themeColor, 
+tk.Label(frame1, text="요린이를 위한\n레시피 추천", bg=themeColor,
          font=("Arial", 40,"bold")).place(x=170, y=180)
 
 # 이미지 로드
