@@ -100,4 +100,5 @@ def ingredName_2_ingredID(name):
 def ingredID_2_ingredName(id):
     df = read_ingred_table()
     ingred_name = df.loc[df["id"] == id, "name"]
+    ingred_name = str(ingred_name).split(" ")[4].split("\n")[0]
     return ingred_name
