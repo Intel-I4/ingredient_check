@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from . import recipe_db, ingredient_db
 
-db_file = "recipes.db"
+db_file = "database/recipes.db"
 
 # 테이블이 없다면 생성 해주는 함수
 def create_reci_ingred_table():
