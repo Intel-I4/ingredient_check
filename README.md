@@ -49,18 +49,17 @@ pip install -r requirements.txt
 - (프로젝트 실행방법에 대해서 기술, 특별한 사용방법이 있다면 같이 기술)
 
 ```
-cd ~/xxxx
 source .venv/bin/activate
+cd ~/ingredient_check
 
-cd /path/to/repo/xxx/
-python demo.py -i xxx -m yyy -d zzz
+python main.py
 ```
 
 
 </br>
 
 
-## Outout
+## Output
 
 - (프로젝트 실행 화면 캡쳐)
 
@@ -70,7 +69,9 @@ python demo.py -i xxx -m yyy -d zzz
 
 ## Appendix
 
-- (참고 자료 및 알아두어야할 사항들 기술)
+- YOLOv8 : 음식 object detection을 위한 back-bone model으로 사용했습니다. 
+- easyOCR : 한국어 OCR을 위한 back-bone model 모델으로 사용했습니다. 
+- socket communication : 냉장고에 있는 데이터베이스 파일을 받아오기 위해 사용했습니다. 
 
 
 </br>
@@ -80,7 +81,7 @@ python demo.py -i xxx -m yyy -d zzz
 
 ## 참고
 
-[일정 및 일지](https://jang-hw.notion.site/I4-2024-372453cc120247ff860577e3eaf6c50d?pvs=74)
+[일정 및 일지](https://jang-hw.notion.site/I4-2024-372453cc120247ff860577e3eaf6c50d?pvs=74)</br>
 [레시피 크롤링 참고 사이트](https://otugi.tistory.com/393)   
 
 
