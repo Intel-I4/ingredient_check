@@ -1,3 +1,6 @@
+import tkinter as tk
+from tkinter import ttk
+
 from database import fridge_db
 from database import ingredient_db, recipe_ingredient_db, recipe_db
 
@@ -12,7 +15,7 @@ themeColor = "#f6ddd9"
 '''
 냉장고 속의 재료 출력
 '''
-def fridge_list(win, tk, ttk):
+def fridge_list(win):
     ##### label #####
     fredge_label = tk.Label(
         win,
@@ -62,13 +65,13 @@ def fridge_list(win, tk, ttk):
 '''
 def recipe_sort():
     global sugestion_lst
-    
+
     fridge_db.db_file = "./database/ingredients.db"
     recipe_db.db_file = "./database/recipes.db"
     ingredient_db.db_file = "./database/recipes.db"
     recipe_ingredient_db.db_file = "./database/recipes.db"
 
-    fred = fridge_db.read_ingredients_table() 
+    fred = fridge_db.read_ingredients_table()
     omlet = recipe_ingredient_db.read_reci_2_ingred_table('오므라이스')["ingredient_name"]
     kimchi = recipe_ingredient_db.read_reci_2_ingred_table('김치찌개')["ingredient_name"]
     jeyuk = recipe_ingredient_db.read_reci_2_ingred_table('제육볶음')["ingredient_name"]
@@ -121,8 +124,10 @@ def recipe_sort():
     print("jeyuk_cnt", jeyuk_cnt)
 
 
-
-def reclip_list(win, tk, num):
+'''
+선택한 레시피에 따라서 출력 내용을 변경
+'''
+def reclip_list(win, num):
     if not any(isinstance(child, tk.Label) for child in win.winfo_children()):
         #### label #####
         reclip_label = tk.Label(
@@ -147,7 +152,7 @@ def reclip_list(win, tk, num):
     #### table ####
     recipe_db.db_file = "./database/recipes.db"
     recipe_df = recipe_db.read_steps_recipe(recipe_lst[sugestion_lst[num]])
-    
+
     #### Text ####
     recipe_text = tk.Text(
         win,
@@ -168,10 +173,10 @@ def reclip_list(win, tk, num):
 '''
 추천 레시피 순서로 버튼 순서 변경
 '''
-def recipe_button(win, tk, btn_callback):
+def recipe_button(win, btn_callback):
     ##### label #####
     suggest_label = tk.Label(
-        win, 
+        win,
         text="추천 레시피",
         bg=themeColor,
         font=("Helvetica", 15)
