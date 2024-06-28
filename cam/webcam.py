@@ -48,7 +48,7 @@ class Webcam:
         self.pre_menu = []
         self.none_menu = []
 
-    def load_model(self, model_path='best01.pt'):
+    def load_model(self, model_path='best.pt'):
         try:
             print("YOLO 모델 로드 중...")
             self.model = YOLO(model_path).to(self.device)  # YOLO 모델 로드 및 장치에 할당
