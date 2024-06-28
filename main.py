@@ -8,11 +8,7 @@ from sock import server
 from ui import fridge_ui, recipe_ui
 from cam.webcam import Webcam
 
-
-
 ########## 전역 변수부 ##########
-
-
 page = 1
 webcam = None
 themeColor = "#f6ddd9"
@@ -25,6 +21,7 @@ recipe_frame = []
 
 
 ########## 함수 정의부 ##########
+
 def next_frame(btn=0):
     global page, webcam, recipe, frame2, recipe_frame
 
@@ -43,10 +40,12 @@ def next_frame(btn=0):
         recipe_frame = recipe_ui.recipe_frame(root, win_height, win_width,
                                               recipe, next_frame, prev_frame)
         if webcam is not None:
-            webcam.start_webcam()  # frame3이 보일 때 웹캠 시작
+             webcam.start_webcam(recipe)  # frame3이 보일 때 웹캠 시작
         frame3.lift()
 
     elif page == 2:
+        if webcam is not None:
+            webcam.stop_webcam()  # frame2에서는 웹캠 정지
         frame2.lift()
 
     elif page == 1:
@@ -66,7 +65,7 @@ def prev_frame():
         frame2.lift()
     elif page == 3:
         if webcam is not None:
-            webcam.start_webcam()  # frame3이 보일 때 웹캠 시작
+            webcam.start_webcam(recipe)  # frame3이 보일 때 웹캠 시작
         frame3.lift()
     elif page > 3:
         recipe_frame[page-4].lift()
@@ -114,26 +113,52 @@ win_height = 960
 root_size_text = str(win_width) + "x" + str(win_height)
 root.geometry(root_size_text)
 
+##### frame4 #####
+
+frame4 = tk.Frame(root, bg=themeColor, border=2)
+frame4.place(x=0, y=0, width=win_width, height=win_height)
+
+# 버튼 frame4
+but_frame4 = tk.Frame(frame4, border=10, bg=themeColor)
+but_frame4.place(x=450, y=850, width=150, height=60)
+tk.Button(but_frame4, text='다음', command=next_frame).pack(side=tk.RIGHT, padx=10)
+tk.Button(but_frame4, text='이전', command=prev_frame).pack(side=tk.RIGHT)
+
 
 ##### frame3 #####
 
 frame3 = tk.Frame(root, bg=themeColor, border=2)
 frame3.place(x=0, y=0, width=640, height=960)
-tk.Label(frame3, text="Frame3", font=('consolas', 20)).pack(fill='y')
 
 # 카메라 로드
 cam_label = tk.Label(frame3)
 cam_label.pack()
 
+# 출력 재료 데이터 텍스트
+tk.Label(frame3, font=('consolas', 20)).pack(fill='y')
+
+# frame3 재료결과 title
+title = tk.Label(frame3, text='필요한 재료',font =("Helvetica", 20), fg='red', bg='white')
+title.place(x=0, y=480, width=320, height=100)
+title_two = tk.Label(frame3, text='준비된 재료',font =("Helvetica", 20), fg='green', bg='white')
+title_two.place(x=320, y=480, width=320, height=100)
+# frame3 재료결과 title 위치, 크기조정
+ingredient = tk.Label(frame3, fg='red', bg='white', font=(15))
+ingredient.place(x=0, y=550, width=320, height=300)
+ingredient2 = tk.Label(frame3, fg='green', bg='white', font=(15))
+ingredient2.place(x=320, y=550, width=320, height=300)
+
+
 # 웹캠 객체 생성
-webcam = Webcam(cam_label)
+webcam = Webcam(cam_label, ingredient, ingredient2)
+
 
 # 버튼 frame3
 but_frame3 = tk.Frame(frame3, border=10, bg=themeColor)
 but_frame3.place(x=450, y=850, width=150, height=60)
+
 tk.Button(but_frame3, text='다음', command=next_frame).pack(side=tk.RIGHT, padx=10)
 tk.Button(but_frame3, text='이전', command=prev_frame).pack(side=tk.RIGHT)
-
 
 
 ##### frame2 #####
@@ -150,7 +175,6 @@ fridge_ui.recipe_button(frame2, next_frame)
 # 버튼 frame2
 but_frame2 = tk.Frame(frame2, border=10, bg=themeColor)
 but_frame2.place(x=450, y=850, width=150, height=60)
-
 
 
 ##### frame1 #####
