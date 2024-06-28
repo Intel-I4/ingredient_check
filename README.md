@@ -9,7 +9,7 @@ git clone https://github.com/Intel-I4/ingredient_check.git
 ```
 
 
-</br></br>
+</br>
 
 
 ## High Level Design
@@ -20,7 +20,7 @@ git clone https://github.com/Intel-I4/ingredient_check.git
 
 
 
-</br></br>
+</br>
 
 
 ## Prerequite
@@ -31,7 +31,7 @@ pip install -r requirements.txt
 ```
 
 
-</br></br>
+</br>
 
 
 ## Steps to run
@@ -47,7 +47,7 @@ python demo.py -i xxx -m yyy -d zzz
 ```
 
 
-</br></br>
+</br>
 
 
 ## Outout
@@ -55,7 +55,7 @@ python demo.py -i xxx -m yyy -d zzz
 - (프로젝트 실행 화면 캡쳐)
 
 
-</br></br>
+</br>
 
 
 ## Appendix
@@ -63,7 +63,7 @@ python demo.py -i xxx -m yyy -d zzz
 - (참고 자료 및 알아두어야할 사항들 기술)
 
 
-</br></br>
+</br>
 
 
 
