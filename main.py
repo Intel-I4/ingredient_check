@@ -71,10 +71,10 @@ def prev_frame():
         recipe_frame[page-4].lift()
 
 
-def load_image():
+def load_image(img_path):
     try:
         # 이미지 로드 및 리사이징
-        image = Image.open("ui/image/main_page.jpeg")
+        image = Image.open(img_path)
         image = image.resize((300, 300), Image.LANCZOS)
         img = ImageTk.PhotoImage(image)
         return img
@@ -130,11 +130,9 @@ tk.Button(but_frame4, text='이전', command=prev_frame).pack(side=tk.RIGHT)
 frame3 = tk.Frame(root, bg=themeColor, border=2)
 frame3.place(x=0, y=0, width=640, height=960)
 
-
 # 카메라 로드
 cam_label = tk.Label(frame3)
 cam_label.pack()
-
 
 # 출력 재료 데이터 텍스트
 tk.Label(frame3, font=('consolas', 20)).pack(fill='y')
@@ -187,8 +185,8 @@ tk.Label(frame1, text="요린이를 위한\n레시피 추천", bg=themeColor,
          font=("Arial", 40, "bold")).place(x=170, y=180)
 
 # 이미지 로드
-main_img = load_image()
-tk.Label(frame1, image=main_img , bg=themeColor).place(x=170, y=300)
+main_img = load_image("ui/image/main_page.jpeg")
+tk.Label(frame1, image=main_img, bg=themeColor).place(x=170, y=300)
 
 # 버튼 frame1
 but_frame1 = tk.Frame(frame1, border=10, bg=themeColor)
