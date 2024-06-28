@@ -148,7 +148,6 @@ def reclip_list(win, num):
         if isinstance(widget, tk.Text):
             widget.destroy()
 
-    print(recipe_lst[sugestion_lst[num]])
     #### table ####
     recipe_db.db_file = "./database/recipes.db"
     recipe_df = recipe_db.read_steps_recipe(recipe_lst[sugestion_lst[num]])
