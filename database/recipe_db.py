@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 
-db_file = "recipes.db"
+db_file = "database/recipes.db"
 
 
 # 테이블이 없다면 생성 해주는 함수
