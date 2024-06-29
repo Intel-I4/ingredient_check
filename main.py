@@ -1,7 +1,6 @@
 import os
 import threading
 import tkinter as tk
-from tkinter import ttk
 from PIL import Image, ImageTk
 
 from sock import server
@@ -14,14 +13,13 @@ webcam = None
 themeColor = "#f6ddd9"
 recipe = 0
 server_ip = "10.10.15.103"
-server_port = 12309
+db_port = 12309
+image_port = 12310
 frame2 = None
 recipe_frame = []
 
 
-
 ########## 함수 정의부 ##########
-
 def next_frame(btn=0):
     global page, webcam, recipe, frame2, recipe_frame
 
@@ -196,11 +194,21 @@ tk.Button(but_frame1, text='시작하기', command=next_frame,
           border=10).pack(fill='x', expand=True)
 
 
-# 냉장고 정보를 라즈베리 파이로부터 받아오기 위한 소켓 서버 생성 (w.thread)
+##### 냉장고 정보를 라즈베리 파이로부터 받아오기 위한 소켓 서버 생성 (w.thread)
 try:
-    freg_thrd = threading.Thread(target=server.receive_file,
-                                 args=(server_ip, server_port, reload_frame2))
+    freg_thrd = threading.Thread(target=server.receive_db_file,
+                                 args=(server_ip, db_port, reload_frame2))
     freg_thrd.start()
+    print("Thread started successfully.")
+except Exception as e:
+    print(f"Error starting thread: {e}")
+
+
+##### 레시피 이미지를 서버에서 받아오기 위한 소켓 서버 생성 (w.thread)
+try:
+    img_thrd = threading.Thread(target=server.receive_img_file,
+                                args=(server_ip, image_port))
+    img_thrd.start()
     print("Thread started successfully.")
 except Exception as e:
     print(f"Error starting thread: {e}")
