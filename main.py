@@ -27,6 +27,8 @@ def next_frame(btn=0):
 
     page += 1
     if page > 3 + len(recipe_frame):
+        if freg_thrd.is_alive():
+            freg_thrd.raise_exception()
         print("exit")
         os._exit(os.EX_OK)
 
@@ -198,12 +200,11 @@ tk.Button(but_frame1, text='시작하기', command=next_frame,
 
 # 냉장고 정보를 라즈베리 파이로부터 받아오기 위한 소켓 서버 생성 (w.thread)
 try:
-    freg_thrd = threading.Thread(target=server.receive_file,
-                                 args=(server_ip, server_port, reload_frame2))
+    freg_thrd = server.file_receive_thread(server_ip, server_port,
+                                           reload_frame2)
     freg_thrd.start()
     print("Thread started successfully.")
 except Exception as e:
     print(f"Error starting thread: {e}")
-
 
 root.mainloop()
