@@ -54,8 +54,8 @@ class Webcam:
             self.model = YOLO(model_path).to(self.device)  # YOLO 모델 로드 및 장치에 할당
             print("YOLO 모델 로드 완료.")
             print("OCR 모델 로드 중...")
-            self.ocr_reader = Reader(['ko'], gpu=True, model_storage_directory='./ocr_model',
-                    user_network_directory='./ocr_model',
+            self.ocr_reader = Reader(['ko'], gpu=True, model_storage_directory='./ocr_model/',
+                    user_network_directory='./ocr_model/',
                     recog_network='custom') # ocr 모델 로드
             print("OCR 모델 로드 완료.")
         except Exception as e:
@@ -78,7 +78,7 @@ class Webcam:
         self.full_menu = recipe_ingredient_db.find_ingred(fridge_ui.recipe_lst[fridge_ui.sugestion_lst[recipe]])
         
         if self.cam is None:  
-            self.cam = cv2.VideoCapture("./20240628_155846_1.mp4")  # 웹캠 초기화 (0은 첫 번째 웹캠을 의미)
+            self.cam = cv2.VideoCapture(0)  # 웹캠 초기화 (0은 첫 번째 웹캠을 의미)
             self.load_model()  # YOLO 모델 로드
             if not self.cam.isOpened():
                 print("Error: 웹캠을 열 수 없습니다.")
@@ -202,9 +202,9 @@ class Webcam:
 
                             for word in self.full_menu:
                                 if word in text:  # 텍스트가 리스트에 포함된 단어를 포함하는지 확인     
-                                    text = word                               
+                                    txt = word
                                     # 텍스트를 준비된 재료로 처리
-                                    self.find_common_and_different(self.none_menu, [text])
+                                    self.find_common_and_different(self.none_menu, [txt])
 
                                     print(f"텍스트: {text}, 신뢰도: {confidence}, 바운딩 박스: {bbox}")
                                     
