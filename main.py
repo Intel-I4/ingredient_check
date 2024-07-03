@@ -7,6 +7,10 @@ from PIL import Image, ImageTk
 from sock import server
 from ui import fridge_ui, recipe_ui
 from cam.webcam import Webcam
+#from speech_to_text import wav_txt
+from thread_speech import thread_sp
+from tts import tts_fi
+from collections import deque
 
 ########## 전역 변수부 ##########
 page = 1
@@ -19,24 +23,33 @@ frame2 = None
 recipe_frame = []
 
 
-
 ########## 함수 정의부 ##########
 
 def next_frame(btn=0):
-    global page, webcam, recipe, frame2, recipe_frame
-
+    global page, webcam, recipe, frame2, recipe_frame, speech_mic
+    
     page += 1
     if page > 3 + len(recipe_frame):
+        thread_sp.stop_event.set()
+        tts_fi.stop_event.set()
+        speech_thrd.join()
+        tts_thrd.join()
         print("exit")
         os._exit(os.EX_OK)
 
     elif page > 3 and page <= 3 + len(recipe_frame):
+        thread_sp.stop_event.set()
+        tts_fi.stop_event.set()
+        speech_thrd.join()
+        tts_thrd.join()
         if webcam is not None:
             webcam.stop_webcam()   # frame2에서는 웹캠 정지
         recipe_frame[page-4].lift()
 
     elif page == 3:
         recipe = btn               # 레시피 버튼 값 recipe 변수에 저장
+        speech_thrd.start()
+        tts_thrd.start()
         recipe_frame = recipe_ui.recipe_frame(root, win_height, win_width,
                                               recipe, next_frame, prev_frame)
         if webcam is not None:
@@ -197,10 +210,27 @@ tk.Button(but_frame1, text='시작하기', command=next_frame,
 
 
 # 냉장고 정보를 라즈베리 파이로부터 받아오기 위한 소켓 서버 생성 (w.thread)
-try:
+try: 
     freg_thrd = threading.Thread(target=server.receive_file,
                                  args=(server_ip, server_port, reload_frame2))
     freg_thrd.start()
+    print("Thread started successfully.")
+except Exception as e:
+    print(f"Error starting thread: {e}")
+    
+
+queue = deque()
+
+try:
+    speech_thrd = threading.Thread(target=thread_sp.thread_speech)
+    #speech_thrd.start()
+    print("Thread started successfully.")
+except Exception as e:
+    print(f"Error starting thread: {e}")
+    
+try:
+    tts_thrd = threading.Thread(target=tts_fi.thread_tts)
+    #tts_thrd.start()
     print("Thread started successfully.")
 except Exception as e:
     print(f"Error starting thread: {e}")

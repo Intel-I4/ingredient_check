@@ -5,9 +5,16 @@ import torch
 from torchvision import transforms
 import sqlite3
 from ui import fridge_ui
-from database import recipe_db, recipe_ingredient_db, ingredient_db, label_change
+from database import recipe_db, recipe_ingredient_db, ingredient_db, label_change, txt_label_ch
 import pandas as pd
 import re
+from tts import tts_module
+import os
+import numpy as np
+from easyocr import Reader
+from PIL import Image, ImageDraw, ImageFont
+
+
 
 
 db_file = "./database/recipes.db"
@@ -15,6 +22,23 @@ db_file = "./database/recipes.db"
 color_lst = [(255, 0, 0), (255, 94, 0), (255, 228, 0), (29, 219, 22), 
              (0, 216, 255), (0, 0, 255), (95, 0, 255), (250, 224, 212), 
              (153, 138, 0), (0, 130, 153)]
+
+
+
+# 나눔고딕 폰트 파일의 절대 경로 설정
+font_path = "./ocr_model/NanumGothic.ttf"
+
+def draw_text(img, text, pos, font, font_size=40, font_color=(0, 255, 0)):
+    pil_img = Image.fromarray(img)
+    draw = ImageDraw.Draw(pil_img)
+    try:
+        font = ImageFont.truetype(font_path, font_size)
+    except IOError:
+        print("Font file not found. Using default font.")
+        font = ImageFont.load_default()
+    
+    draw.text(pos, text, font=font, fill=font_color)
+    return np.array(pil_img)
 
 all_frame_labels = []
 class Webcam:    
@@ -32,9 +56,17 @@ class Webcam:
         self.none_menu = []
 
     def load_model(self, model_path='best02.pt'):
-        #print("Loading model...")
-        self.model = YOLO(model_path).to(self.device)  # YOLO 모델 로드 및 장치에 할당
-        #print("Model loaded.")
+        try:
+            print("YOLO 모델 로드 중...")
+            self.model = YOLO(model_path).to(self.device)  # YOLO 모델 로드 및 장치에 할당
+            print("YOLO 모델 로드 완료.")
+            print("OCR 모델 로드 중...")
+            self.ocr_reader = Reader(['ko'], gpu=True, model_storage_directory='./ocr_model/',
+                    user_network_directory='./ocr_model/',
+                    recog_network='custom') # ocr 모델 로드
+            print("OCR 모델 로드 완료.")
+        except Exception as e:
+            print(f"모델 로드 오류: {e}")
     
     def detect_and_label_objects(self, name):
         
@@ -54,7 +86,7 @@ class Webcam:
         
         
         if self.cam is None:  
-            self.cam = cv2.VideoCapture(0)  # 웹캠 초기화 (0은 첫 번째 웹캠을 의미)
+            self.cam = cv2.VideoCapture("20240628_170803.mp4")  # 웹캠 초기화 (0은 첫 번째 웹캠을 의미)
             self.load_model()  # YOLO 모델 로드
             if not self.cam.isOpened():
                 print("Error: 웹캠을 열 수 없습니다.")
@@ -95,7 +127,6 @@ class Webcam:
         self.ex_txt_lbl["text"] = ex_ingred_list_str
         
         
-        
         # 준비가 안된 재료들 배치 정렬 저장 
         self.none_menu.clear()
         self.none_menu = different_values
@@ -113,9 +144,13 @@ class Webcam:
         
         self.txt_lbl["text"] = ingred_str
         
+        a = txt_label_ch.txt_label_change(ingred_list)
         
+        with open('ingred_list.txt', 'w') as file:
+            file.write(' '.join(a))
+              
+            
         
-
     def update_camera(self):
         global color_lst, all_frame_labels
         
@@ -163,18 +198,44 @@ class Webcam:
                         
                         # 변환된 라벨을 all_frame_labels 리스트에 저장
                         self.all_frame_labels.extend(translated_labels)
-                        #print(self.all_frame_labels)
-                        #print(self.all_frame_labels)
                         
                         self.find_common_and_different(self.none_menu, self.all_frame_labels)
-                        
-                        
                    
                         # 바운딩 박스 그리기
                         cv2.rectangle(frame_rgb, (x1, y1), (x2, y2), color_lst[int(label)], 2)
                         # 바운딩 박스 위에 레이블과 점수 표시
                         cv2.putText(frame_rgb, f'{label_name}: {score:.2f}', (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_lst[int(label)], 2)
 
+                
+                # OCR을 이용해 텍스트 인식 및 그리기
+                if self.ocr_reader:
+                    try:
+                        result = self.ocr_reader.readtext(frame_rgb) 
+                        for (bbox, text, confidence) in result:
+
+                            for word in self.full_menu:
+                                if word in text:  # 텍스트가 리스트에 포함된 단어를 포함하는지 확인     
+                                    txt = word
+                                    # 텍스트를 준비된 재료로 처리
+                                    self.find_common_and_different(self.none_menu, [txt])
+
+                                    print(f"텍스트: {text}, 신뢰도: {confidence}, 바운딩 박스: {bbox}")
+                                    
+                                    # 바운딩 박스 그리기
+                                    (top_left, top_right, bottom_right, bottom_left) = bbox
+                                    top_left = tuple(map(int, top_left))
+                                    bottom_right = tuple(map(int, bottom_right))
+
+                                    cv2.rectangle(frame_rgb, top_left, bottom_right, (0, 255, 0), 2)
+                                    # 텍스트와 신뢰도 표시
+                                    frame_rgb = draw_text(frame_rgb, f'{text} ({confidence:.2f})', (top_left[0], top_left[1] - 40), font_path, 40, (0, 255, 0))
+
+                    except Exception as e:
+                        print(f"OCR 오류: {e}")
+                
+                
+                
+                
                 # OpenCV BGR 형식으로 변환
                 #annotated_frame = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
                 annotated_frame = frame_rgb
