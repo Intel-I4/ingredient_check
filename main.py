@@ -1,7 +1,6 @@
 import os
 import threading
 import tkinter as tk
-from tkinter import ttk
 from PIL import Image, ImageTk
 
 from sock import server
@@ -18,22 +17,23 @@ webcam = None
 themeColor = "#f6ddd9"
 recipe = 0
 server_ip = "10.10.15.103"
-server_port = 12309
+db_port = 12309
 frame2 = None
 recipe_frame = []
 
 
 ########## 함수 정의부 ##########
-
 def next_frame(btn=0):
     global page, webcam, recipe, frame2, recipe_frame, speech_mic
     
     page += 1
     if page > 3 + len(recipe_frame):
+
         thread_sp.stop_event.set()
         tts_fi.stop_event.set()
         speech_thrd.join()
         tts_thrd.join()
+
         print("exit")
         os._exit(os.EX_OK)
 
@@ -208,7 +208,6 @@ tk.Button(but_frame1, text='시작하기', command=next_frame,
           width=20, height=10, bg=themeColor, font=('Helvetica', 30),
           border=10).pack(fill='x', expand=True)
 
-
 # 냉장고 정보를 라즈베리 파이로부터 받아오기 위한 소켓 서버 생성 (w.thread)
 try: 
     freg_thrd = threading.Thread(target=server.receive_file,
@@ -234,6 +233,5 @@ try:
     print("Thread started successfully.")
 except Exception as e:
     print(f"Error starting thread: {e}")
-
 
 root.mainloop()
