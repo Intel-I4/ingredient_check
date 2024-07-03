@@ -14,7 +14,7 @@ git clone https://github.com/Intel-I4/ingredient_check.git
 ## 시장 조사
 #### 30인을 대상으로 여론조사 실시</br>
 <p align="center">
-  <img src="https://ibb.co/KqrdMt2">
+  <img src="https://i.ibb.co/cFr0GW6/image.png">
 </p>  
 * [그림 1] 전체 30인 중 요리함 : 13명, 요리안함 : 17명</br></br>
 * [그림 2] 요리를 하는 사람 13인을 대상으로 음식을 만들 때 가장 신경쓰는 부분을 질문한 결과, 재료라는 응답이 61.5% </br></br>
@@ -27,7 +27,7 @@ git clone https://github.com/Intel-I4/ingredient_check.git
 ## High Level Design
 
 <p align="center">
-  <img src="https://ibb.co/rZZBMCb">
+  <img src="https://i.ibb.co/THHQRVK/Screenshot-from-2024-07-03-09-57-12.png">
 </p>
 
 
@@ -63,7 +63,7 @@ python3 main.py
 ## Outout
 
 <p align="center">
-  <img src="https://ibb.co/3rZMHTD">
+  <img src="https://i.ibb.co/K0vLH5M/Screenshot-from-2024-07-02-16-30-52.png">
 </p>
 
 
