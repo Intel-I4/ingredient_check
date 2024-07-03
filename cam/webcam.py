@@ -7,8 +7,14 @@ from torchvision import transforms
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 
 from ui import fridge_ui
-from database import label_change
-from database import recipe_ingredient_db as ri_db
+from database import recipe_db, recipe_ingredient_db, ingredient_db, label_change, txt_label_ch
+import pandas as pd
+import re
+from tts import tts_module
+import os
+import numpy as np
+from easyocr import Reader
+from PIL import Image, ImageDraw, ImageFont
 
 
 db_file = "./database/recipes.db"
@@ -17,8 +23,21 @@ color_lst = [(255, 0, 0), (255, 94, 0), (255, 228, 0), (29, 219, 22),
              (0, 216, 255), (0, 0, 255), (95, 0, 255), (250, 224, 212),
              (153, 138, 0), (0, 130, 153)]
 
-# 나눔고딕 폰트 파일의 경로 설정
+
+# 나눔고딕 폰트 파일의 절대 경로 설정
 font_path = "./ocr_model/NanumGothic.ttf"
+
+def draw_text(img, text, pos, font, font_size=40, font_color=(0, 255, 0)):
+    pil_img = Image.fromarray(img)
+    draw = ImageDraw.Draw(pil_img)
+    try:
+        font = ImageFont.truetype(font_path, font_size)
+    except IOError:
+        print("Font file not found. Using default font.")
+        font = ImageFont.load_default()
+    
+    draw.text(pos, text, font=font, fill=font_color)
+    return np.array(pil_img)
 
 all_frame_labels = []
 
@@ -51,23 +70,20 @@ class Webcam:
         self.pre_menu = []
         self.none_menu = []
 
-    def load_model(self, model_path='best01.pt'):
+
+    def load_model(self, model_path='best02.pt'):
         try:
             print("YOLO 모델 로드 중...")
-
-            # YOLO 모델 로드 및 장치에 할당
-            self.model = YOLO(model_path).to(self.device)
-
+            self.model = YOLO(model_path).to(self.device)  # YOLO 모델 로드 및 장치에 할당
             print("YOLO 모델 로드 완료.")
             print("OCR 모델 로드 중...")
-
             self.ocr_reader = Reader(['ko'], gpu=True, model_storage_directory='./ocr_model/',
                     user_network_directory='./ocr_model/',
                     recog_network='custom') # ocr 모델 로드
-
             print("OCR 모델 로드 완료.")
         except Exception as e:
             print(f"모델 로드 오류: {e}")
+
 
     def detect_and_label_objects(self, name):
         # detected_objects = ['beef', 'carrot', 'chicken', 'chili', 'egg',
@@ -77,6 +93,7 @@ class Webcam:
         translated_labels = [label_change.label_ch(name)]
 
         return translated_labels
+
 
     def start_webcam(self, recipe):
         sugest_recipe = fridge_ui.sugestion_lst[recipe]
@@ -93,7 +110,7 @@ class Webcam:
         self.full_menu = recipe_ingredient_db.find_ingred(fridge_ui.recipe_lst[fridge_ui.sugestion_lst[recipe]])
         
         if self.cam is None:  
-            self.cam = cv2.VideoCapture(0)  # 웹캠 초기화 (0은 첫 번째 웹캠을 의미)
+            self.cam = cv2.VideoCapture("20240628_170803.mp4")  # 웹캠 초기화 (0은 첫 번째 웹캠을 의미)
             self.load_model()  # YOLO 모델 로드
             if not self.cam.isOpened():
                 print("Error: 웹캠을 열 수 없습니다.")
@@ -132,6 +149,12 @@ class Webcam:
 
         self.ex_txt_lbl["text"] = ex_ingred_list_str
 
+        
+        
+        # 준비가 안된 재료들 배치 정렬 저장 
+        self.none_menu.clear()
+        self.none_menu = different_values
+
         ingred_list = list(self.none_menu)
         ingred_str = ""
 
@@ -144,6 +167,12 @@ class Webcam:
                 ingred_str = ingred_str + " " + ingred_list[num]
 
         self.txt_lbl["text"] = ingred_str
+        
+        a = txt_label_ch.txt_label_change(ingred_list)
+        
+        with open('ingred_list.txt', 'w') as file:
+            file.write(' '.join(a))
+              
 
     def update_camera(self):
         global color_lst, all_frame_labels
@@ -193,9 +222,6 @@ class Webcam:
 
                         # 변환된 라벨을 all_frame_labels 리스트에 저장
                         self.all_frame_labels.extend(translated_labels)
-                        # print(self.all_frame_labels)
-                        # print(self.all_frame_labels)
-
                         self.find_common_and_different(self.none_menu, self.all_frame_labels)
 
                         # 바운딩 박스 그리기
@@ -203,10 +229,11 @@ class Webcam:
                         # 바운딩 박스 위에 레이블과 점수 표시
                         cv2.putText(frame_rgb, f'{label_name}: {score:.2f}', (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color_lst[int(label)], 2)
 
+
                 # OCR을 이용해 텍스트 인식 및 그리기
                 if self.ocr_reader:
                     try:
-                        result = self.ocr_reader.readtext(frame_rgb)
+                        result = self.ocr_reader.readtext(frame_rgb) 
                         for (bbox, text, confidence) in result:
                             for word in self.full_menu:
                                 if word in text:  # 텍스트가 리스트에 포함된 단어를 포함하는지 확인     
@@ -218,6 +245,7 @@ class Webcam:
 
                                     # 바운딩 박스 그리기
                                     (top_left, _, bottom_right, _) = bbox
+
                                     top_left = tuple(map(int, top_left))
                                     bottom_right = tuple(map(int, bottom_right))
 
@@ -250,6 +278,7 @@ class Webcam:
                 print("Error: 웹캠에서 프레임을 읽을 수 없습니다.")
         else:
             print("Error: 웹캠을 사용할 수 없거나 이미 정지되었습니다.")
+
 
     def stop_webcam(self):
         if self.cam is not None:
