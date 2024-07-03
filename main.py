@@ -197,7 +197,7 @@ tk.Button(but_frame1, text='시작하기', command=next_frame,
 
 ##### 냉장고 정보를 라즈베리 파이로부터 받아오기 위한 소켓 서버 생성 (w.thread)
 try:
-    freg_thrd = server.file_receive_thread(server_ip, db_port,
+    freg_thrd = server.file_receive_thread(server_ip, server_port,
                                            reload_frame2)
     freg_thrd.start()
     print("Thread started successfully.")

@@ -30,6 +30,7 @@ class file_receive_thread(threading.Thread):
                         if not data:
                             break
                         f.write(data)
+
                 print("File received successfully.")
 
                 # 리스트 실시간 갱신
